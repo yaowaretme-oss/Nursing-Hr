@@ -1,0 +1,1022 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { background: #f0ebf8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
+    .container { max-width: 700px; margin: auto; }
+    .card { background: white; padding: 25px; margin: 15px 0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .question { font-weight: bold; margin-bottom: 15px; color: #333; font-size: 1.1em; }
+    .option { display: block; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .option:hover { background: #f8f5ff; border-color: #673ab7; }
+    .option input { margin-right: 12px; transform: scale(1.2); }
+    input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+    button { background: #673ab7; color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; width: 100%; transition: 0.3s; }
+    button:hover { background: #512da8; box-shadow: 0 4px 15px rgba(103, 58, 183, 0.4); }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .result-box { border-left: 5px solid #673ab7; background: #f3e5f5; }
+    h2 { color: #673ab7; text-align: center; }
+  </style>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f9ff;
+      --bg-soft: #e8f2ff;
+      --surface: rgba(255, 255, 255, 0.96);
+      --ink: #10355a;
+      --muted: #55718f;
+      --line: rgba(16, 53, 90, 0.12);
+      --accent: #1d6fd6;
+      --accent-strong: #0f4fa8;
+      --accent-soft: rgba(29, 111, 214, 0.12);
+      --shadow: 0 18px 40px rgba(37, 84, 124, 0.12);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 0;
+      background:
+        radial-gradient(circle at top left, rgba(29, 111, 214, 0.12), transparent 32%),
+        linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 24%, #ffffff 100%);
+      color: var(--ink);
+      font-family: "Noto Sans Thai", "Segoe UI", Tahoma, sans-serif;
+      font-size: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 8px 32px;
+    }
+
+    .page-hero {
+      position: relative;
+      overflow: hidden;
+      margin: 0 -8px 14px;
+      padding: 30px 18px 24px;
+      border-radius: 0 0 30px 30px;
+      background: linear-gradient(135deg, #0f5fbf 0%, #4b9bf0 100%);
+      color: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .page-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -50px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.24), transparent 68%);
+      pointer-events: none;
+    }
+
+    .hero-kicker {
+      margin: 0 0 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.88;
+    }
+
+    .page-hero h1 {
+      margin: 0;
+      max-width: none;
+      font-size: clamp(1.5rem, 5.8vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .hero-summary {
+      max-width: 38rem;
+      margin: 12px 0 0;
+      font-size: clamp(1.04rem, 4.3vw, 1.12rem);
+      line-height: 1.75;
+      opacity: 0.96;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .hero-pill {
+      padding: 9px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .card {
+      margin: 0 0 16px;
+      padding: 20px 15px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .panel-heading,
+    .section-heading {
+      margin: 0 0 16px;
+      font-size: clamp(1.1rem, 3.8vw, 1.38rem);
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .action-note {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .app-shell {
+      display: grid;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .main-column,
+    .side-column {
+      min-width: 0;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-label {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      min-height: 58px;
+      padding: 14px 16px;
+      border: 1.5px solid rgba(16, 53, 90, 0.14);
+      border-radius: var(--radius-sm);
+      background: #fbfdff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 1.06rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      background: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .question-card {
+      scroll-margin-top: 16px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .question-card.is-answered {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .question-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .question-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-width: 86px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .question {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(1.2rem, 5.1vw, 1.4rem);
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      min-height: 78px;
+      margin: 0;
+      padding: 16px;
+      border: 1px solid rgba(16, 53, 90, 0.12);
+      border-radius: var(--radius-md);
+      background: #fbfdff;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-size: 1.06rem;
+      line-height: 1.72;
+    }
+
+    .option:hover,
+    .option:focus-within {
+      border-color: rgba(29, 111, 214, 0.28);
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(29, 111, 214, 0.08);
+    }
+
+    .option.selected {
+      border-color: var(--accent);
+      background: rgba(29, 111, 214, 0.08);
+      box-shadow: 0 10px 24px rgba(29, 111, 214, 0.12);
+    }
+
+    .option input {
+      width: 24px;
+      height: 24px;
+      margin: 4px 0 0;
+      transform: none;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .interpretation-card {
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    }
+
+    .interpretation-card h3 {
+      margin: 0 0 14px;
+      font-size: clamp(1.16rem, 5vw, 1.32rem);
+    }
+
+    .interpretation-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .score-badge {
+      color: var(--accent-strong);
+      font-weight: 800;
+    }
+
+    .result-box {
+      border-left: none;
+      background: linear-gradient(180deg, rgba(29, 111, 214, 0.08) 0%, #ffffff 100%);
+    }
+
+    .result-box h3 {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+
+    .action-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #submitBtn {
+      width: 100%;
+      min-height: 64px;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent) 0%, #4d9df2 100%);
+      color: #ffffff;
+      font-size: 1.12rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 16px 30px rgba(29, 111, 214, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    #submitBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 34px rgba(29, 111, 214, 0.24);
+    }
+
+    #submitBtn:disabled {
+      opacity: 0.74;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    @media (max-width: 759px) {
+      body {
+        font-size: 17px;
+      }
+
+      .app-shell {
+        gap: 14px;
+      }
+
+      .page-hero {
+        padding: 32px 18px 26px;
+        border-radius: 0 0 32px 32px;
+      }
+
+      .hero-kicker {
+        font-size: 0.86rem;
+      }
+
+      .card {
+        padding: 18px 14px;
+      }
+
+      .field {
+        gap: 10px;
+      }
+
+      .question-header {
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .options-grid {
+        gap: 12px;
+      }
+
+      .option {
+        border-radius: 18px;
+      }
+    }
+
+    @media (min-width: 760px) {
+      .container {
+        padding: 24px 20px 44px;
+      }
+
+      .page-hero {
+        margin: 0 0 18px;
+        padding: 28px 24px;
+        border-radius: 32px;
+      }
+
+      .card {
+        padding: 24px 22px;
+      }
+
+      .details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .question-header {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    @media (min-width: 1080px) {
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>📋 การประเมินประเภทผู้ป่วย</h2>
+
+  <div class="card">
+    <label><b>โรงพยาบาล:</b></label>
+    <select id="hospital">
+      <option value="">เลือกโรงพยาบาล</option>
+      <option value="PPAT">PPAT</option>
+      <option value="PKRT">PKRT</option>
+    </select>
+    <br><br>
+    <label><b>ผู้ประเมิน:</b></label>
+    <input type="text" id="name" placeholder="ชื่อ-นามสกุล">
+    <br><br>
+    <label><b>หอผู้ป่วย:</b></label>
+    <select id="ward" disabled>
+      <option value="">เลือกโรงพยาบาลก่อน</option>
+    </select>
+    <br><br>
+    <label><b>หมายเลขห้อง:</b></label>
+    <input type="text" id="room">
+    <br><br>
+    <label><b>การวินิจฉัย:</b></label>
+    <input type="text" id="dx">
+  </div>
+
+  <div class="card">
+    <div class="question">1. ความสามารถในการรับประทานอาหาร🍽️</div>
+    <label class="option"><input type="radio" name="q1" value="1"> 1 = ทำได้ด้วยตนเอง</label>
+    <label class="option"><input type="radio" name="q1" value="2"> 2 = ต้องการความช่วยเหลือเล็กน้อย</label>
+    <label class="option"><input type="radio" name="q1" value="3"> 3 = ต้องมีผู้ดูแลช่วยเหลือป้อนอาหารให้</label>
+    <label class="option"><input type="radio" name="q1" value="4"> 4 = ต้องดูแลป้อนอาหาร และเฝ้าระวังการสำลักอย่างใกล้ชิด</label>
+    <label class="option"><input type="radio" name="q1" value="5"> 5 = ให้อาหารทางสายยาง / ให้สารน้ำทดแทนทางหลอดเลือดดำ</label>
+  </div>
+
+  <div class="card">
+    <div class="question">2. การทำความสะอาดร่างกาย🛁</div>
+    <label class="option"><input type="radio" name="q2" value="1"> 1 = ทำได้ด้วยตนเองในห้องน้ำ</label>
+    <label class="option"><input type="radio" name="q2" value="2"> 2 = ต้องพยุงไปห้องน้ำ จัดเตรียมเครื่องใช้ให้ / เป็นการอาบน้ำทารกปกติ</label>
+    <label class="option"><input type="radio" name="q2" value="3"> 3 = ต้องช่วยเหลือทำให้บางส่วนบนเตียง / เช็ดตัวทารกแรกคลอด เด็กหลังผ่าตัด ผู้ป่วยจิตเวช / เช็ดตัวลดไข้</label>
+    <label class="option"><input type="radio" name="q2" value="4"> 4 = ต้องช่วยเหลือทำให้โดยสมบูรณ์ ในผู้ป่วยพลิกตัวเปลี่ยนท่าได้เอง</label>
+    <label class="option"><input type="radio" name="q2" value="5"> 5 = ต้องช่วยเหลือทำความสะอาดให้โดยสมบูรณ์ในผู้ป่วยไม่รู้สึกตัว / มีอาการทางจิตรุนแรง</label>
+  </div>
+
+  <div class="card">
+    <div class="question">3. การขับถ่าย🚽</div>
+    <label class="option"><input type="radio" name="q3" value="1"> 1 = เดินไปขับถ่ายได้เอง</label>
+    <label class="option"><input type="radio" name="q3" value="2"> 2 = ต้องพยุงไป แต่ขับถ่ายได้เอง / เด็กเล็กหลังขับถ่ายต้องทำความสะอาดให้</label>
+    <label class="option"><input type="radio" name="q3" value="3"> 3 = ขับถ่ายได้เองบนเตียง  ต้องช่วยทำความสะอาดให้</label>
+    <label class="option"><input type="radio" name="q3" value="4"> 4 = ขับถ่ายได้เอง ต้องอยู่ช่วยเหลือตลอดเวลา / ต้องสวนอุจจาระ ปัสสาวะ ควักอุจจาระ / มี colostomy ดูแลตนเองได้</label>
+    <label class="option"><input type="radio" name="q3" value="5"> 5 = ควบคุมการขับถ่ายไม่ได้ / ใส่สายสวนคาหรือ ถุงยาง / มี Urostomy, Colostomy, S-P cystrostomy</label>
+  </div>
+
+  <div class="card">
+    <div class="question">4. การเคลื่อนไหวร่างกายและการออกกำลังกาย🚶</div>
+    <label class="option"><input type="radio" name="q4" value="1"> 1 = เคลื่อนไหวร่างกาย ออกกำลังกายได้เอง</label>
+    <label class="option"><input type="radio" name="q4" value="2"> 2 = ต้องพยุง ประคับประคองขณะเคลื่อนไหวร่างกาย / พยุงออกกำลังกาย</label>
+    <label class="option"><input type="radio" name="q4" value="3"> 3 = เคลื่อนไหวร่างกายได้น้อย / Bed rest / ต้องควบคุม กระตุ้นให้เคลื่อนไหวร่างกาย</label>
+    <label class="option"><input type="radio" name="q4" value="4"> 4 = เคลื่อนไหวร่างกายได้น้อยมาก / Absolute bed rest / ต้องควบคุม ดูแลการเคลื่อนไหวอย่างใกล้ชิด</label>
+    <label class="option"><input type="radio" name="q4" value="5"> 5 = ไม่สามารถเคลื่อนไหวร่างกายได้เลย / เคลื่อนไหวโดยไม่มีเป้าหมาย / ต้องได้รับความช่วยเหลือออกกำลังกายทั้งหมด</label>
+  </div>
+
+  <div class="card">
+    <div class="question">5. ความต้องการปฏิบัติเกี่ยวกับกิจกรรมการรักษาพยาบาล🩺</div>
+    <label class="option"><input type="radio" name="q5" value="1"> 1 = ต้องการอย่างง่ายที่ปฏิบัติเป็นประจำ เช่น ตรวจวัดสัญญาณชีพ ชั่งน้ำหนัก วัดส่วนสูง</label>
+    <label class="option"><input type="radio" name="q5" value="2"> 2 = ต้องสังเกตอาการหลังทำเป็นเวลาสั้นๆ / การตรวจวินิจฉัยที่ไม่ยุ่งยาก เช่น การตรวจปัสสาวะ การทำ EKG การเก็บ Specimen</label>
+    <label class="option"><input type="radio" name="q5" value="3"> 3 = ต้องการตรวจวินิจฉัยที่ต้องสังเกตอาการ การเปลี่ยนแปลงเป็นระยะภายใน 24 ชั่วโมง เช่น เจาะปอด ทำแผลที่มีภาวะแทรกซ้อน Gastric lavage, Gastroscope</label>
+    <label class="option"><input type="radio" name="q5" value="4"> 4 = ต้องการตรวจวินิจฉัยที่รวดเร็วและต้องใช้ความระมัดระวัง ต้องสังเกตอาการอย่างน้อย ทุก 2-4 ชั่วโมง ต่อเนื่อง 24 ชั่วโมง</label>
+    <label class="option"><input type="radio" name="q5" value="5"> 5 = ต้องการแก้ไขภาวะวิกฤตอย่างเร่งด่วน / ทำหัตถการที่เสี่ยงต่อชีวิต ต้องเฝ้าระวังอย่างใกล้ชิดและต่อเนื่องตลอดเวลา เช่น เจาะคอ CPR หลังดมยาสลบ 24 ชั่วโมงแรก ใช้เครื่องช่วยหายใจ</label>
+  </div>
+
+  <div class="card">
+    <div class="question">6. การได้รับยา💊</div>
+    <label class="option"><input type="radio" name="q6" value="1"> 1 = ไม่ได้รับยา / ได้รับยารับประทานและยาทาภายนอกที่เป็นยาสามัญประจำบ้านและวิตามิน</label>
+    <label class="option"><input type="radio" name="q6" value="2"> 2 = ได้รับยาโดยการรับประทาน สูดดม หยอด ป้าย เหน็บ หรือพ่นที่ผู้ป่วยทำได้เอง / ต้องดูแลให้ได้รับยาครบถ้วน</label>
+    <label class="option"><input type="radio" name="q6" value="3"> 3 = ได้รับยาโดยการรับประทาน หยอด สูดดม อมใต้ลิ้น วันละไม่เกิน 4 ครั้ง / ต้องช่วยเหลือให้ได้รับยา และสังเกต อาการหลังให้ยา</label>
+    <label class="option"><input type="radio" name="q6" value="4"> 4 = ได้รับยาโดยฉีดวิธีฉีดเข้าใต้ผิวหนัง เข้ากล้ามเนื้อ หรือหลอดเลือดดำเป็นครั้งๆ / ยาพ่นที่ผู้ป่วยทำเองไม่ได้ / ต้องสังเกตอาการหลังให้ยาใกล้ชิด</label>
+    <label class="option"><input type="radio" name="q6" value="5"> 5 = ได้รับยาทาง IV ทุก 1-2 ชั่วโมง, IV drip / ต้องดูแลช่วยเหลือขณะให้ยาและหลังให้ยาอย่างใกล้ชิดตลอดเวลา</label>
+  </div>
+
+  <div class="card">
+    <div class="question">7. อาการและอาการแสดงผิดปกติ🤒</div>
+    <label class="option"><input type="radio" name="q7" value="1"> 1 = ไม่มีอาการแสดงผิดปกติ</label>
+    <label class="option"><input type="radio" name="q7" value="2"> 2 = มีอาการแสดงผิดปกติเล็กน้อย เช่น มีไข้ ปวดแผล เจ็บครรภ์เตือน</label>
+    <label class="option"><input type="radio" name="q7" value="3"> 3 = มีอาการแสดงผิดปกติมาก บ่อยครั้ง ต้องควบคุมด้วยยาและการรักษาพยาบาล เช่น เหนื่อยหอบต้องให้ออกซิเจน</label>
+    <label class="option"><input type="radio" name="q7" value="4"> 4 = มีอาการแสดงผิดปกติรุนแรง บ่อยครั้ง มีแนวโน้มที่จะควบคุมอาการได้ เช่น GI bleeding, ปวดแผลมากทุก 4 ชั่วโมง</label>
+    <label class="option"><input type="radio" name="q7" value="5"> 5 = มีอาการแสดงผิดปกติรุนแรง ตลอดเวลา / อาการผิดปกติเฉียบพลัน ต้องแก้ไขโดยรีบด่วน เช่น Respiratory failure, severe chest pain, shock</label>
+  </div>
+
+  <div class="card">
+    <div class="question">8. ความต้องการการสังเกต ประเมินอาการ ตรวจวัดสัญญาณชีพและการบันทึก📝</div>
+    <label class="option"><input type="radio" name="q8" value="1"> 1 = การบันทึกเพื่อประเมินสภาพร่างกายทั่วไป</label>
+    <label class="option"><input type="radio" name="q8" value="2"> 2 = การบันทึกอย่างน้อยวันละ 2 ครั้ง</label>
+    <label class="option"><input type="radio" name="q8" value="3"> 3 = การบันทึกอย่างน้อยวันละ 3-4 ครั้ง</label>
+    <label class="option"><input type="radio" name="q8" value="4"> 4 = การบันทึกอย่างน้อยวันละ 6 ครั้ง</label>
+    <label class="option"><input type="radio" name="q8" value="5"> 5 = การบันทึกทุก1-2 ชั่วโมง หรือบ่อยกว่านั้น</label>
+  </div>
+
+  <div class="card">
+    <div class="question">9. การรับรู้🧠</div>
+    <label class="option"><input type="radio" name="q9" value="1"> 1 = รู้สึกตัวดี รู้จักตนเองและสิ่งแวดล้อม</label>
+    <label class="option"><input type="radio" name="q9" value="2"> 2 = รู้สึกตัวดี รู้กาลเวลา สถานที่ แต่ตอบสนองต่อสิ่งเร้าช้ากว่าปกติ</label>
+    <label class="option"><input type="radio" name="q9" value="3"> 3 = รู้สึกตัว ซึม มึนงง สับสนบางครั้ง / ตามคำถามกาลเวลาผิดบ้างถูกบ้าง / ตอบสนองต่อสิ่งเร้าช้ามาก</label>
+    <label class="option"><input type="radio" name="q9" value="4"> 4 = รู้สึกตัว ลืมตาได้เอง ตอบคำถาม ทำตามสั่งไม่ได้ / ตอบสนองต่อสิ่งเร้าไม่ถูกต้อง / แสดงพฤติกรรมที่รบกวน การดำเนินชีวิตประจำวัน อาจเป็นอันตรายต่อตนเอง ผู้อื่น</label>
+    <label class="option"><input type="radio" name="q9" value="5"> 5 = ไม่รู้สึกตัว ไม่ตอบสนองต่อสิ่งเร้าภายนอก / ควบคุมตนเองไม่ได้ มีพฤติกรรมรุนแรง อาจทำร้ายตนเอง ผู้อื่น</label>
+  </div>
+
+  <div class="card">
+    <div class="question">10. ความต้องการด้านจิตใจ อารมณ์ และสังคม💞</div>
+    <label class="option"><input type="radio" name="q10" value="1"> 1 = ยอมรับสภาพความเจ็บป่วย ให้ความร่วมมือในการรักษา / แสดงอารมณ์ได้สอดคล้องกับสถานการณ์</label>
+    <label class="option"><input type="radio" name="q10" value="2"> 2 = ยอมรับสภาพความเจ็บป่วย แสดงความวิตกกังวลเล็กน้อย</label>
+    <label class="option"><input type="radio" name="q10" value="3"> 3 = ยอมรับสภาพความเจ็บป่วยไม่ได้  แสดงความวิตกกังวลสูง เรียกร้องความสนใจ ต่อรองการรักษาพยาบาล /  ผู้ป่วยเด็กเล็ก วัยก่อนเรียน / บุคคลสำคัญที่ควรได้รับการดูแลเป็นพิเศษ</label>
+    <label class="option"><input type="radio" name="q10" value="4"> 4 = ไม่ยอมรับสภาพความเจ็บป่วย มีปฏิกิริยาต่อต้าน ปฏิเสธการรักษา / ซึมเศร้า ท้อแท้ หมดกำลังใจ แยกตัว / อยู่ในห้องแยก มีแนวโน้มเกิดพฤติกรรมเบี่ยงเบน</label>
+    <label class="option"><input type="radio" name="q10" value="5"> 5 = ไม่ยอมรับสภาพความเจ็บป่วย / ไม่รู้สติ ไม่รับข้อมูลใดๆ / อยู่ในสภาพสิ้นหวัง ไม่สนใจตนเอง สิ่งแวดล้อม / มีพฤติกรรมเบี่ยงเบน / ผู้ได้รับ ผลกระทบจากการดูแลรักษาหรือข้อร้องเรียนที่ต้องติดตามเฝ้าระวัง</label>
+  </div>
+
+  <div class="card">
+    <div class="question">11. ความต้องการการดูแลตนเองตามภาวะเบี่ยงเบนด้านสุขภาพและการพัฒนาตามวัย🧍</div>
+    <label class="option"><input type="radio" name="q11" value="1"> 1 = ไม่จำเป็นต้องปรับเปลี่ยนกิจวัตรประจำวัน /  เรียน รู้ได้ด้วยตนเอง</label>
+    <label class="option"><input type="radio" name="q11" value="2"> 2 = ต้องปรับเปลี่ยนกิจวัตรประจำวันเล็กน้อย / ต้องการการสนับสนุนให้ข้อมูล</label>
+    <label class="option"><input type="radio" name="q11" value="3"> 3 = ต้องใช้เทคนิคในการดูแลตนเอง /  ต้องการการสอนอธิบาย และฝึกทำ</label>
+    <label class="option"><input type="radio" name="q11" value="4"> 4 = ต้องอาศัยเทคโนโลยีที่ซับซ้อนในการดูแลตนเอง เช่น การทำ CAPD, Central venous care, Pace maker / มีความเชื่อด้านสุขภาพไม่ถูกต้อง</label>
+    <label class="option"><input type="radio" name="q11" value="5"> 5 = ต้องอาศัยเทคโนโลยีที่ซับซ้อนในการดูแล  ไม่สามารถดูแลตนเองได้ ต้องพึ่งพาผู้อื่นหมด / ต้องสอนให้บุคคลใกล้ชิดดูแลแทน เช่น เด็กทารก ผู้ป่วย CVA,Sudden blindness</label>
+  </div>
+
+  <div class="card">
+    <div class="question">12. การบันทึกทางการพยาบาล การติดตามเพื่อป้องกันความเสี่ยง และพัฒนาคุณภาพ📈</div>
+    <label class="option"><input type="radio" name="q12" value="1"> 1 = การบันทึกทั่วไปในแต่ละเวร ที่สะท้อนกระบวนการพยาบาล รวมถึงการประเมินซ้ำ MEWS, PEWS, Pain scale, Fall, Barden’s scale ในกลุ่มทั่วไปที่คะแนนหรือความเสี่ยงต่ำ</label>
+    <label class="option"><input type="radio" name="q12" value="2"> 2 = การบันทึกทั่วไปในแต่ละเวร  พร้อมมีการบันทึกพยาบาลผู้ป่วยทั่วไปขณะรับใหม่ และวางแผนการจำหน่าย</label>
+    <label class="option"><input type="radio" name="q12" value="3"> 3 = การบันทึกทั่วไปในแต่ละเวร  พร้อมมีการบันทึกทางการพยาบาลในผู้ป่วยเตรียมจำหน่าย รวมถึงกระบวนการตรวจสอบบันทึกเวชระเบียน ตลอดระยะเวลาที่ผู้ป่วยนอนโรงพยาบาลให้สมบูรณ์ สรุปปัญหาการดูแล บันทึกข้อมูลการจำหน่าย และเอกสารสำหรับผู้ป่วยกลับบ้าน เช่น ใบรับรองแพทย์ ใบ claim ใบนัด ใบส่งตัว (Refer) เป็นต้น</label>
+    <label class="option"><input type="radio" name="q12" value="4"> 4 = การบันทึกทั่วไปในแต่ละเวร  พร้อมมีการบันทึกทางการพยาบาลในผู้ป่วยวิกฤต ผู้ป่วยมีอาการเปลี่ยนแปลง ความเสี่ยงสูง ที่มีอาการเปลี่ยนแปลงแผนการดูแลเฝ้าระวัง ต้องติดตามประเมินซ้ำ ≥ 2 ชั่วโมง</label>
+    <label class="option"><input type="radio" name="q12" value="5"> 5 = การบันทึกทั่วไปในแต่ละเวร  พร้อมมีการบันทึกทางการพยาบาลในผู้ป่วยวิกฤต ผู้ป่วยมีอาการเปลี่ยนแปลง ความเสี่ยงสูง ที่มีอาการเปลี่ยนแปลงแผนการดูแลเฝ้าระวัง ต้องติดตามประเมินซ้ำ ≤ 2 ชั่วโมง การบันทึกที่มีความซับซ้อน เช่น multidisciplinary care team conference, Post OP CVT, CRRT, การวางแผนการจำหน่ายผู้ป่วยที่มีความซับซ้อน เช่น Complex disease, VLBW preterm, Congenital anomaly</label>
+  </div>
+
+<div class="card interpretation-card">
+    <h3>🔍 เกณฑ์การแปลผลคะแนน</h3>
+    <ul class="interpretation-list">
+      <li>
+        <span class="score-badge">ประเภทที่ 1 (1-12 คะแนน):</span> <b>Minimal care</b> (ดูแลขั้นต่ำ / พึ่งพาตนเองได้มาก) 
+        กำหนดให้ความต้องการการพยาบาล <b>3.13 ชั่วโมง</b>
+      </li>
+      <li>
+        <span class="score-badge">ประเภทที่ 2 (13-24 คะแนน):</span> <b>Intermediate care</b> (ดูแลปานกลาง) 
+        กำหนดให้ความต้องการการพยาบาล <b>3.5 ชั่วโมง</b>
+      </li>
+      <li>
+        <span class="score-badge">ประเภทที่ 3 (25-36 คะแนน):</span> <b>High dependency care</b> (พึ่งพาสูง / ต้องการการดูแลมาก) 
+        กำหนดให้ความต้องการการพยาบาล <b>5.5 ชั่วโมง</b>
+      </li>
+      <li>
+        <span class="score-badge">ประเภทที่ 4 (37-48 คะแนน):</span> <b>Semi-intensive care</b> (กึ่งวิกฤต / เฝ้าระวังใกล้ชิด) 
+        กำหนดให้ความต้องการการพยาบาล <b>7.5 ชั่วโมง</b>
+      </li>
+      <li>
+        <span class="score-badge">ประเภทที่ 5 (49-60 คะแนน):</span> <b>Intensive care</b> (วิกฤต / เข้มข้น) 
+        กำหนดให้ความต้องการการพยาบาล <b>12 ชั่วโมง</b>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card result-box">
+    <h3 id="displayScore">คะแนนรวม: -</h3>
+    <h3 id="displayDescription">คำอธิบาย: -</h3> 
+    <h3 id="displayResult">ผลการประเมิน: -</h3>
+  </div>
+
+  <div style="margin-bottom: 50px;">
+    <button id="submitBtn" onclick="calculate()">บันทึกข้อมูล</button>
+  </div>
+</div>
+
+<script>
+const HOSPITAL_WARD_OPTIONS = {
+  PPAT: ["Ward 3", "Ward 6", "Ward 7", "Ward 8", "Ward 9", "Ward 10", "ICU"],
+  PKRT: ["Ward 10", "Ward 12", "Ward 14", "Ward 15", "ICU"]
+};
+
+function updateWardOptions() {
+  const hospitalSelect = document.getElementById("hospital");
+  const wardSelect = document.getElementById("ward");
+  if (!hospitalSelect || !wardSelect) return;
+
+  const hospital = hospitalSelect.value;
+  const currentWard = wardSelect.value;
+  const wards = HOSPITAL_WARD_OPTIONS[hospital] || [];
+
+  wardSelect.innerHTML = "";
+
+  const placeholderOption = document.createElement("option");
+  placeholderOption.value = "";
+  placeholderOption.textContent = hospital ? "เลือกหอผู้ป่วย" : "เลือกโรงพยาบาลก่อน";
+  wardSelect.appendChild(placeholderOption);
+
+  wards.forEach(function(wardName) {
+    const option = document.createElement("option");
+    option.value = wardName;
+    option.textContent = wardName;
+    if (wardName === currentWard) {
+      option.selected = true;
+    }
+    wardSelect.appendChild(option);
+  });
+
+  if (!wards.includes(currentWard)) {
+    wardSelect.value = "";
+  }
+
+  wardSelect.disabled = !hospital;
+}
+
+function initializeHospitalWardOptions() {
+  const hospitalSelect = document.getElementById("hospital");
+  if (!hospitalSelect || hospitalSelect.dataset.wardBound === "true") return;
+
+  hospitalSelect.dataset.wardBound = "true";
+  hospitalSelect.addEventListener("change", updateWardOptions);
+  updateWardOptions();
+}
+
+initializeHospitalWardOptions();
+
+function calculate() {
+  const btn = document.getElementById("submitBtn");
+  let score = 0;
+  let answers = [];
+
+  // 1. ตรวจสอบข้อมูลพื้นฐาน
+  const hospital = document.getElementById("hospital").value;
+  const ward = document.getElementById("ward").value;
+  const name = document.getElementById("name").value;
+  if (!hospital) { alert("กรุณาเลือกโรงพยาบาล"); return; }
+  if (!ward) { alert("กรุณาเลือกหอผู้ป่วย"); return; }
+  if (!name) { alert("กรุณากรอกชื่อผู้ประเมิน"); return; }
+
+  // 2. รวบรวมคะแนน
+  for (let i = 1; i <= 12; i++) {
+    let radios = document.getElementsByName("q" + i);
+    let answered = false;
+    for (let j = 0; j < radios.length; j++) {
+      if (radios[j].checked) {
+        score += Number(radios[j].value);
+        answers.push(radios[j].value);
+        answered = true;
+        break;
+      }
+    }
+    if (!answered) {
+      alert("กรุณาตอบคำถามข้อที่ " + i + " ให้ครบถ้วน");
+      return;
+    }
+  }
+
+  // 3. แปลผล
+let result = "";
+let description = "";
+
+if (score <= 12) {
+  description = "ประเภท 1 Minimal care (ดูแลขั้นต่ำ / พึ่งพาตนเองได้มาก)";
+  result = "ความต้องการการพยาบาล 3.13 ชั่วโมง";
+} 
+else if (score <= 24) {
+  description = "ประเภท 2 Intermediate care (ดูแลปานกลาง)";
+  result = "ความต้องการการพยาบาล 3.5 ชั่วโมง";
+} 
+else if (score <= 36) {
+  description = "ประเภท 3 High dependency care (พึ่งพาสูง / ต้องการการดูแลมาก)";
+  result = "ความต้องการการพยาบาล 5.5 ชั่วโมง";
+} 
+else if (score <= 48) {
+  description = "ประเภท 4 Semi-intensive care (กึ่งวิกฤต / เฝ้าระวังใกล้ชิด)";
+  result = "ความต้องการการพยาบาล 7.5 ชั่วโมง";
+} 
+else {
+  description = "ประเภท 5 Intensive care (วิกฤต / เข้มข้น)";
+  result = "ความต้องการการพยาบาล 12 ชั่วโมง";
+}
+
+  // 4. แสดงผลบนหน้าจอ
+  document.getElementById("displayScore").innerText = "คะแนนรวม: " + score;
+  document.getElementById("displayDescription").innerText = "คำอธิบาย: " + description;
+  document.getElementById("displayResult").innerText = "ผลการประเมิน: " + result;
+
+  // 5. ล็อคปุ่มทันทีเพื่อป้องกันการส่งซ้ำ
+  btn.disabled = true;
+  btn.innerText = "⌛ กำลังส่งข้อมูลไปยัง Google Sheet...";
+  btn.style.background = "#9e9e9e";
+
+  // 6. ส่งข้อมูลไป Server
+  google.script.run
+    .withSuccessHandler(function(msg) {
+      // เปลี่ยนปุ่มเป็นปุ่ม "ทำรายการใหม่" แทนการใช้ Alert ที่ต้องคอยกด OK
+      btn.innerText = "✅ บันทึกสำเร็จ";
+      btn.style.background = "#4caf50";
+      btn.disabled = false;
+      
+      // เมื่อกดปุ่มเดิมอีกครั้ง จะเป็นการ Reset หน้าจอ
+      btn.onclick = function() { location.reload(); };
+    })
+    .withFailureHandler(function(err) {
+      alert("เกิดข้อผิดพลาด: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "❌ ลองใหม่อีกครั้ง";
+      btn.style.background = "#f44336";
+    })
+    .saveData({
+      hospital: hospital,
+      name: name,
+      ward: ward,
+      room: document.getElementById("room").value,
+      dx: document.getElementById("dx").value,
+      answers: answers,
+      score: score,
+      description: description,
+      result: result
+    });
+}
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", initializeResponsiveLayout);
+
+  function initializeResponsiveLayout() {
+    const container = document.querySelector(".container");
+    if (!container || container.dataset.enhanced === "true") return;
+
+    initializeHospitalWardOptions();
+
+    container.dataset.enhanced = "true";
+
+    const title = container.querySelector("h2");
+    const cards = Array.from(container.querySelectorAll(".card"));
+    const detailsCard = cards.find(function(card) {
+      return !card.querySelector(".question") &&
+        !card.classList.contains("interpretation-card") &&
+        !card.classList.contains("result-box");
+    });
+    const questionCards = cards.filter(function(card) {
+      return Boolean(card.querySelector(".question"));
+    });
+    const interpretationCard = container.querySelector(".interpretation-card");
+    const resultBox = container.querySelector(".result-box");
+    const submitBtn = document.getElementById("submitBtn");
+    const actionPanel = submitBtn ? submitBtn.parentElement : null;
+
+    const hero = buildHero(title, questionCards.length);
+    const appShell = document.createElement("div");
+    const mainColumn = document.createElement("div");
+
+    appShell.className = "app-shell";
+    mainColumn.className = "main-column";
+
+    if (title) title.remove();
+
+    container.prepend(hero);
+    hero.insertAdjacentElement("afterend", appShell);
+    appShell.appendChild(mainColumn);
+
+    if (detailsCard) {
+      enhanceDetailsCard(detailsCard);
+      mainColumn.appendChild(detailsCard);
+    }
+
+    questionCards.forEach(function(card, index) {
+      enhanceQuestionCard(card, index + 1);
+      mainColumn.appendChild(card);
+    });
+
+    if (interpretationCard) {
+      mainColumn.appendChild(interpretationCard);
+    }
+
+    if (resultBox) {
+      mainColumn.appendChild(resultBox);
+    }
+
+    if (actionPanel) {
+      actionPanel.classList.add("card", "action-panel");
+
+      if (!actionPanel.querySelector(".action-note")) {
+        const note = document.createElement("p");
+        note.className = "action-note";
+        note.textContent = "กรอกข้อมูลให้ครบ แล้วระบบจะคำนวณผลและบันทึกลง Google Sheet ให้ทันที";
+        actionPanel.insertBefore(note, submitBtn);
+      }
+
+      mainColumn.appendChild(actionPanel);
+    }
+
+    updateSelectionStates();
+  }
+
+  function buildHero(titleNode, totalQuestions) {
+    const hero = document.createElement("section");
+    const kicker = document.createElement("p");
+    const heading = document.createElement("h1");
+
+    hero.className = "page-hero";
+    kicker.className = "hero-kicker";
+
+    kicker.textContent = "Patient Classification Form";
+    heading.textContent = titleNode ? titleNode.textContent.trim() : "ระบบประเมินประเภทผู้ป่วย";
+
+    hero.appendChild(kicker);
+    hero.appendChild(heading);
+
+    return hero;
+  }
+
+  function enhanceDetailsCard(card) {
+    if (!card || card.dataset.enhanced === "true") return;
+
+    const labels = Array.from(card.querySelectorAll("label"));
+    const heading = document.createElement("h3");
+    const grid = document.createElement("div");
+
+    card.dataset.enhanced = "true";
+    heading.className = "section-heading";
+    heading.textContent = "ข้อมูลผู้ประเมิน";
+    grid.className = "details-grid";
+
+    labels.forEach(function(label) {
+      const input = label.nextElementSibling;
+      if (!input || !["INPUT", "SELECT"].includes(input.tagName)) return;
+
+      const field = document.createElement("div");
+      const fieldLabel = document.createElement("div");
+
+      field.className = "field";
+      fieldLabel.className = "field-label";
+      fieldLabel.textContent = label.textContent.replace(":", "").trim();
+
+      field.appendChild(fieldLabel);
+      field.appendChild(input);
+      grid.appendChild(field);
+    });
+
+    card.innerHTML = "";
+    card.appendChild(heading);
+    card.appendChild(grid);
+  }
+
+  function enhanceQuestionCard(card, questionNumber) {
+    if (!card || card.dataset.enhanced === "true") return;
+
+    const question = card.querySelector(".question");
+    const options = Array.from(card.querySelectorAll(".option"));
+    const header = document.createElement("div");
+    const badge = document.createElement("span");
+    const grid = document.createElement("div");
+
+    card.dataset.enhanced = "true";
+    card.dataset.questionNumber = String(questionNumber);
+    card.id = "question-" + questionNumber;
+    card.classList.add("question-card");
+
+    header.className = "question-header";
+    badge.className = "question-number";
+    badge.textContent = "ข้อ " + questionNumber;
+    grid.className = "options-grid";
+
+    if (question) {
+      question.parentNode.insertBefore(header, question);
+      header.appendChild(badge);
+      header.appendChild(question);
+    }
+
+    options.forEach(function(option) {
+      const input = option.querySelector('input[type="radio"]');
+      grid.appendChild(option);
+
+      if (input) {
+        input.addEventListener("change", updateSelectionStates);
+      }
+    });
+
+    card.appendChild(grid);
+  }
+
+  function updateSelectionStates() {
+    const questionCards = Array.from(document.querySelectorAll(".question-card"));
+
+    questionCards.forEach(function(card) {
+      const radios = Array.from(card.querySelectorAll('input[type="radio"]'));
+      const checked = radios.find(function(radio) { return radio.checked; });
+
+      card.classList.toggle("is-answered", Boolean(checked));
+
+      Array.from(card.querySelectorAll(".option")).forEach(function(option) {
+        const input = option.querySelector('input[type="radio"]');
+        option.classList.toggle("selected", Boolean(input && input.checked));
+      });
+    });
+  }
+
+  calculate = function() {
+    const btn = document.getElementById("submitBtn");
+    let score = 0;
+    let answers = [];
+
+    const hospital = document.getElementById("hospital").value;
+    const ward = document.getElementById("ward").value;
+    const name = document.getElementById("name").value;
+    if (!hospital) { alert("กรุณาเลือกโรงพยาบาล"); return; }
+    if (!ward) { alert("กรุณาเลือกหอผู้ป่วย"); return; }
+    if (!name) { alert("กรุณากรอกชื่อผู้ประเมิน"); return; }
+
+    for (let i = 1; i <= 12; i++) {
+      let radios = document.getElementsByName("q" + i);
+      let answered = false;
+      for (let j = 0; j < radios.length; j++) {
+        if (radios[j].checked) {
+          score += Number(radios[j].value);
+          answers.push(radios[j].value);
+          answered = true;
+          break;
+        }
+      }
+      if (!answered) {
+        alert("กรุณาตอบคำถามข้อที่ " + i + " ให้ครบถ้วน");
+        return;
+      }
+    }
+
+    let result = "";
+    let description = "";
+
+    if (score <= 12) {
+      description = "ประเภท 1 Minimal care (ดูแลขั้นต่ำ / พึ่งพาตนเองได้มาก)";
+      result = "ความต้องการการพยาบาล 3.13 ชั่วโมง";
+    } else if (score <= 24) {
+      description = "ประเภท 2 Intermediate care (ดูแลปานกลาง)";
+      result = "ความต้องการการพยาบาล 3.5 ชั่วโมง";
+    } else if (score <= 36) {
+      description = "ประเภท 3 High dependency care (พึ่งพาสูง / ต้องการการดูแลมาก)";
+      result = "ความต้องการการพยาบาล 5.5 ชั่วโมง";
+    } else if (score <= 48) {
+      description = "ประเภท 4 Semi-intensive care (กึ่งวิกฤต / เฝ้าระวังใกล้ชิด)";
+      result = "ความต้องการการพยาบาล 7.5 ชั่วโมง";
+    } else {
+      description = "ประเภท 5 Intensive care (วิกฤต / เข้มข้น)";
+      result = "ความต้องการการพยาบาล 12 ชั่วโมง";
+    }
+
+    document.getElementById("displayScore").innerText = "คะแนนรวม: " + score;
+    document.getElementById("displayDescription").innerText = "คำอธิบาย: " + description;
+    document.getElementById("displayResult").innerText = "ผลการประเมิน: " + result;
+    updateSelectionStates();
+
+    btn.disabled = true;
+    btn.innerText = "กำลังส่งข้อมูลไปยัง Google Sheet...";
+    btn.style.background = "#7d8ea3";
+
+    if (!window.google || !google.script || !google.script.run) {
+      alert("เปิดผ่าน Google Apps Script Web App เพื่อบันทึกข้อมูลลง Google Sheet");
+      btn.disabled = false;
+      btn.innerText = "บันทึกข้อมูล";
+      btn.style.background = "";
+      return;
+    }
+
+    google.script.run
+      .withSuccessHandler(function() {
+        btn.innerText = "บันทึกสำเร็จ";
+        btn.style.background = "#1d8f6e";
+        btn.disabled = false;
+        btn.onclick = function() { location.reload(); };
+      })
+      .withFailureHandler(function(err) {
+        alert("เกิดข้อผิดพลาด: " + err.message);
+        btn.disabled = false;
+        btn.innerText = "ลองใหม่อีกครั้ง";
+        btn.style.background = "#d64747";
+      })
+      .saveData({
+        hospital: hospital,
+        name: name,
+        ward: ward,
+        room: document.getElementById("room").value,
+        dx: document.getElementById("dx").value,
+        answers: answers,
+        score: score,
+        description: description,
+        result: result
+      });
+  };
+</script>
