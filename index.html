@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:,">
   <style>
     body { background: #f0ebf8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
     .container { max-width: 700px; margin: auto; }
@@ -47,6 +48,7 @@
       margin: 0;
       min-height: 100vh;
       padding: 0;
+      overflow-x: hidden;
       background:
         radial-gradient(circle at top left, rgba(29, 111, 214, 0.12), transparent 32%),
         linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 24%, #ffffff 100%);
@@ -96,8 +98,8 @@
     .page-hero h1 {
       margin: 0;
       max-width: none;
-      font-size: clamp(1.5rem, 5.8vw, 3rem);
-      line-height: 1.08;
+      font-size: clamp(1.4rem, 5.2vw, 3rem);
+      line-height: 1.12;
       letter-spacing: -0.01em;
       white-space: nowrap;
     }
@@ -249,6 +251,7 @@
       font-size: clamp(1.2rem, 5.1vw, 1.4rem);
       font-weight: 800;
       line-height: 1.6;
+      overflow-wrap: anywhere;
     }
 
     .options-grid {
@@ -271,6 +274,7 @@
       transition: 0.2s ease;
       font-size: 1.06rem;
       line-height: 1.72;
+      overflow-wrap: anywhere;
     }
 
     .option:hover,
@@ -366,6 +370,10 @@
         font-size: 17px;
       }
 
+      .details-grid {
+        grid-template-columns: 1fr !important;
+      }
+
       .app-shell {
         gap: 14px;
       }
@@ -373,6 +381,13 @@
       .page-hero {
         padding: 32px 18px 26px;
         border-radius: 0 0 32px 32px;
+      }
+
+      .page-hero h1 {
+        max-width: none;
+        font-size: clamp(1.55rem, 6.2vw, 2rem);
+        line-height: 1.14;
+        white-space: nowrap;
       }
 
       .hero-kicker {
@@ -397,7 +412,27 @@
       }
 
       .option {
+        padding: 18px 16px;
         border-radius: 18px;
+        font-size: 1.12rem;
+        line-height: 1.78;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .details-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      .details-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .page-hero h1 {
+        font-size: clamp(1.34rem, 4.9vw, 1.78rem);
+        white-space: nowrap;
       }
     }
 
@@ -412,17 +447,24 @@
         border-radius: 32px;
       }
 
-      .card {
-        padding: 24px 22px;
+      .page-hero h1 {
+        max-width: none;
+        white-space: nowrap;
       }
 
-      .details-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .card {
+        padding: 24px 22px;
       }
 
       .question-header {
         flex-direction: row;
         align-items: flex-start;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -822,6 +864,7 @@ else {
       mainColumn.appendChild(actionPanel);
     }
 
+    bindResponsiveDetailLayout();
     updateSelectionStates();
   }
 
@@ -834,7 +877,7 @@ else {
     kicker.className = "hero-kicker";
 
     kicker.textContent = "Patient Classification Form";
-    heading.textContent = titleNode ? titleNode.textContent.trim() : "ระบบประเมินประเภทผู้ป่วย";
+    heading.textContent = (titleNode ? titleNode.textContent.trim() : "ระบบประเมินประเภทผู้ป่วย").replace(/^📋\s*/, "");
 
     hero.appendChild(kicker);
     hero.appendChild(heading);
@@ -873,6 +916,8 @@ else {
     card.innerHTML = "";
     card.appendChild(heading);
     card.appendChild(grid);
+
+    applyResponsiveDetailLayout();
   }
 
   function enhanceQuestionCard(card, questionNumber) {
@@ -926,6 +971,43 @@ else {
         option.classList.toggle("selected", Boolean(input && input.checked));
       });
     });
+  }
+
+  function getResponsiveViewportWidth() {
+    const visualWidth = window.visualViewport ? window.visualViewport.width : Number.POSITIVE_INFINITY;
+    const layoutWidth = window.innerWidth || Number.POSITIVE_INFINITY;
+    const screenWidth = window.screen && window.screen.width ? window.screen.width : Number.POSITIVE_INFINITY;
+
+    return Math.min(visualWidth, layoutWidth, screenWidth);
+  }
+
+  function shouldUseSingleColumnDetails() {
+    const viewportWidth = getResponsiveViewportWidth();
+    const isTouchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+    return isTouchDevice || viewportWidth < 1280;
+  }
+
+  function applyResponsiveDetailLayout() {
+    const detailsGrid = document.querySelector(".details-grid");
+    if (!detailsGrid) return;
+
+    detailsGrid.style.gridTemplateColumns = shouldUseSingleColumnDetails()
+      ? "1fr"
+      : "repeat(2, minmax(0, 1fr))";
+  }
+
+  function bindResponsiveDetailLayout() {
+    if (document.body.dataset.detailLayoutBound === "true") return;
+
+    document.body.dataset.detailLayoutBound = "true";
+    window.addEventListener("resize", applyResponsiveDetailLayout);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", applyResponsiveDetailLayout);
+    }
+
+    applyResponsiveDetailLayout();
   }
 
   calculate = function() {
